@@ -29,3 +29,6 @@ Sube esta carpeta a GitHub. Actions compila solo: pestaña **Actions → Build A
 - Negrita/cursiva y fuente exacta no se detectan todavía.
 - Idioma fijo `spa+eng` (cambiar en `MainActivity.kt`).
 - Usar solo con libros propios, de dominio público o con permiso del autor.
+
+## Servidor en Windows (sin Docker)
+Doble clic en `server/iniciar_windows.bat` (como administrador la primera vez, para abrir el firewall). Instala Tesseract y dependencias, muestra tu IP y arranca en el puerto 8000. Requiere Python 3.12.

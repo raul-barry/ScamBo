@@ -11,6 +11,12 @@ from dataclasses import dataclass, field
 import cv2
 import numpy as np
 import pytesseract
+import os as _os
+import shutil as _shutil
+
+_WIN = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+if _os.name == "nt" and not _shutil.which("tesseract") and _os.path.exists(_WIN):
+    pytesseract.pytesseract.tesseract_cmd = _WIN
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Mm
