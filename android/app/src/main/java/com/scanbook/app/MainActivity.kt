@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -185,6 +186,7 @@ fun ScanBookScreen(activity: ComponentActivity) {
     var server by remember { mutableStateOf(prefs.getString("server", "http://192.168.1.10:8000")!!) }
     val pages = remember { mutableStateListOf<Uri>() }
     var busy by remember { mutableStateOf(false) }
+    var useServer by remember { mutableStateOf(false) }
     var msg by remember { mutableStateOf("") }
     var results by remember { mutableStateOf<List<Pair<String, Uri>>>(emptyList()) }
     val scope = rememberCoroutineScope()
@@ -212,6 +214,10 @@ fun ScanBookScreen(activity: ComponentActivity) {
 
     Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("ScanBook", style = MaterialTheme.typography.headlineSmall)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Switch(checked = useServer, onCheckedChange = { useServer = it }, enabled = !busy)
+            Text("  " + if (useServer) "Servidor (mejor calidad)" else "En el teléfono (sin internet)")
+        }
         OutlinedTextField(
             value = server,
             onValueChange = { server = it; prefs.edit().putString("server", it).apply() },
@@ -240,7 +246,8 @@ fun ScanBookScreen(activity: ComponentActivity) {
                 results = emptyList()
                 scope.launch {
                     try {
-                        results = process(ctx, server, pages.toList()) { msg = it }
+                        results = if (useServer) process(ctx, server, pages.toList()) { msg = it }
+                                  else processLocal(ctx, pages.toList()) { msg = it }
                         msg = "Listo. Guardado en Descargas/ScanBook"
                     } catch (e: Exception) {
                         msg = "Error: ${e.message}"
