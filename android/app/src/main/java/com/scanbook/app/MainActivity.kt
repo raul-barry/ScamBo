@@ -86,6 +86,24 @@ private const val DOCX_MIME =
 
 private fun mimeOf(name: String) = if (name.endsWith(".docx")) DOCX_MIME else "application/pdf"
 
+/** Limpia la URL: quita espacios y barra final, y agrega http:// si falta. */
+private fun norm(base: String): String {
+    val t = base.trim().trimEnd('/')
+    return if (t.startsWith("http://") || t.startsWith("https://")) t else "http://$t"
+}
+
+/** Prueba /health y devuelve un mensaje claro con la causa si falla. */
+private suspend fun ping(base: String): String = withContext(Dispatchers.IO) {
+    val url = norm(base) + "/health"
+    try {
+        http.newCall(Request.Builder().url(url).build()).execute().use { r ->
+            if (r.isSuccessful) "Servidor OK ($url)" else "El servidor respondió HTTP ${r.code} en $url"
+        }
+    } catch (e: Exception) {
+        "No conecta a $url\n${e.javaClass.simpleName}: ${e.message}"
+    }
+}
+
 /** Sube las páginas, espera el procesado y guarda los 3 archivos en Descargas/ScanBook. */
 private suspend fun process(
     ctx: Context,
@@ -93,7 +111,7 @@ private suspend fun process(
     pages: List<Uri>,
     onMsg: (String) -> Unit,
 ): List<Pair<String, Uri>> = withContext(Dispatchers.IO) {
-    val b = base.trim().trimEnd('/')
+    val b = norm(base)
 
     fun call(req: Request): String = http.newCall(req).execute().use { r ->
         val body = r.body?.string().orEmpty()
@@ -201,6 +219,13 @@ fun ScanBookScreen(activity: ComponentActivity) {
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
+        OutlinedButton(
+            onClick = {
+                msg = "Probando conexión…"
+                scope.launch { msg = ping(server) }
+            },
+            enabled = !busy,
+        ) { Text("Probar conexión") }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = { startScan() }, enabled = !busy) { Text("Escanear") }
             OutlinedButton(
