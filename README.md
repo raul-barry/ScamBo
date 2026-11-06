@@ -34,4 +34,4 @@ Sube esta carpeta a GitHub. Actions compila solo: pestaña **Actions → Build A
 Doble clic en `server/iniciar_windows.bat` (como administrador la primera vez, para abrir el firewall). Instala Tesseract y dependencias, muestra tu IP y arranca en el puerto 8000. Requiere Python 3.12.
 
 ## Modo local (sin servidor)
-Interruptor de la app, activo por defecto: OCR con ML Kit en el teléfono. Genera `libro.docx` y `libro.pdf` (ambos de texto sobre hojas en blanco, sin fotos). Sin internet ni servidor, calidad algo menor.
+Interruptor de la app, activo por defecto: OCR con ML Kit en el teléfono. Genera `libro.docx` y `libro.pdf` (texto sobre hojas en blanco, con las imágenes principales recortadas en su posición; corrige páginas giradas). Sin internet ni servidor, calidad algo menor.
