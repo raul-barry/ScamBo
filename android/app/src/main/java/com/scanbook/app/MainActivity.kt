@@ -268,6 +268,7 @@ fun ScanBookScreen(activity: ComponentActivity) {
                         Text(
                             when {
                                 name.endsWith(".docx") -> "Word"
+                                name == "libro.pdf" -> "PDF"
                                 name.contains("fiel") -> "PDF fiel"
                                 else -> "PDF reconstruido"
                             }
